@@ -3,117 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AR Запуск</title>
+  <title>AR</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
+      height: 100%;
+      overflow: hidden;
       background: #000;
-      color: #fff;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
     model-viewer {
       width: 100%;
-      max-width: 600px;
-      height: 400px;
-      margin-top: 20px;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
+      height: 100%;
+      display: block;
+      background: #000;
     }
   </style>
 </head>
 <body>
-  <h1>Просмотр AR модели</h1>
-
   <model-viewer
     id="viewer"
-    src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-    ar
-    ar-modes="webxr scene-viewer quick-look"
+    src=""
+    ios-src=""
+    alt="AR Модель"
     camera-controls
     auto-rotate
-    style="background: #000;"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    shadow-intensity="1"
+    exposure="1"
+    environment-image="neutral"
   ></model-viewer>
-
-  <button id="start-ar">Включить AR</button>
 
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
   <script>
-    document.getElementById("start-ar").addEventListener("click", () => {
+    function getModelNameFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("model") || "default-model.glb";
+    }
+
+    window.addEventListener("load", () => {
+      const modelName = getModelNameFromURL();
+      const modelUrl = `https://kemperim.github.io/ar-test/models/${modelName}`;
+
       const viewer = document.getElementById("viewer");
-      if (viewer.activateAR) {
-        viewer.activateAR();
-      } else {
-        console.warn("AR не поддерживается на этом устройстве или браузере.");
-      }
+      viewer.src = modelUrl;
+      viewer.iosSrc = modelName.endsWith(".glb") ? modelUrl.replace(".glb", ".usdz") : modelUrl;
+
+      viewer.addEventListener("load", () => {
+        if (viewer.activateAR) {
+          viewer.activateAR();
+        } else {
+          console.warn("AR режим не поддерживается или Model Viewer ещё не загружен.");
+        }
+      });
     });
-  </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AR Запуск</title>
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      background: #000;
-      color: #fff;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    model-viewer {
-      width: 100%;
-      max-width: 600px;
-      height: 400px;
-      margin-top: 20px;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <h1>Просмотр AR модели</h1>
 
-  <model-viewer
-    id="viewer"
-    src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-    ar
-    ar-modes="webxr scene-viewer quick-look"
-    camera-controls
-    auto-rotate
-    style="background: #000;"
-  ></model-viewer>
-
-  <button id="start-ar">Включить AR</button>
-
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-
-  <script>
-    document.getElementById("start-ar").addEventListener("click", () => {
-      const viewer = document.getElementById("viewer");
-      if (viewer.activateAR) {
-        viewer.activateAR();
-      } else {
-        console.warn("AR не поддерживается на этом устройстве или браузере.");
-      }
+    document.getElementById("viewer").addEventListener("error", (e) => {
+      console.error("Ошибка загрузки модели:", e.detail);
     });
   </script>
 </body>
