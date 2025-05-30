@@ -20,23 +20,14 @@
       max-width: 600px;
       height: 400px;
       background: #000;
-      margin-top: 10px;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <h1>AR просмотр</h1>
-  
+
   <model-viewer
     id="viewer"
-    src=""
-    ios-src=""
     alt="AR Модель"
     camera-controls
     auto-rotate
@@ -46,8 +37,6 @@
     exposure="1"
     environment-image="neutral"
   ></model-viewer>
-
-  <button id="start-ar">Включить AR</button>
 
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
@@ -62,17 +51,19 @@
       const modelUrl = `https://kemperim.github.io/ar-test/models/${modelName}`;
       const viewer = document.getElementById("viewer");
 
+      // Устанавливаем модель сразу
       viewer.src = modelUrl;
       viewer.iosSrc = modelName.endsWith(".glb") ? modelUrl.replace(".glb", ".usdz") : modelUrl;
-    });
 
-    document.getElementById("start-ar").addEventListener("click", () => {
-      const viewer = document.getElementById("viewer");
-      if (viewer.activateAR) {
-        viewer.activateAR();
-      } else {
-        console.warn("AR режим не поддерживается на этом устройстве или браузере.");
-      }
+      // Ждем, пока модель загрузится, чтобы сразу запустить AR
+      viewer.addEventListener("load", () => {
+        // Если поддерживается AR, сразу запускаем
+        if (viewer.activateAR) {
+          viewer.activateAR();
+        } else {
+          console.warn("AR режим не поддерживается на этом устройстве или браузере.");
+        }
+      });
     });
 
     document.getElementById("viewer").addEventListener("error", (e) => {
